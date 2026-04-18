@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>CrushVault - Anonymous Confessions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(180deg, #1A1A2E 0%, #16213E 50%, #0F3460 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+            padding: 20px;
+        }
+        
+        /* Stars animation */
+        .star {
+            position: fixed;
+            color: white;
+            opacity: 0.6;
+            font-size: 8px;
+            animation: twinkle 3s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes shootingStar {
+            0% {
+                transform: translateX(-100px) translateY(-100px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(400px) translateY(400px);
+                opacity: 0;
+            }
+        }
+        
+        .shooting-star {
+            position: fixed;
+            color: white;
+            font-size: 12px;
+            pointer-events: none;
+            animation: shootingStar 3s linear infinite;
+            opacity: 0;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Quote Card */
+        .quote-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .quote-text {
+            font-size: 16px;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        
+        .quote-author {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        /* Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            flex: 1;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn:hover {
+            background: rgba(255,255,255,0.25);
+            transform: scale(0.98);
+        }
+        
+        .btn-emoji {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .btn-label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* Form Card */
+        .form-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .media-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        
+        .media-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 30px;
+            padding: 10px 16px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .media-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .send-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #FF6B6B, #EE5A24);
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+        
+        .send-btn:hover {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        
+        /* Leaderboard */
+        .leaderboard {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .leaderboard-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .rank {
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        /* Hidden class */
+        .hidden {
+            display: none;
+        }
+        
+        /* Avatar grid */
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        .avatar-option {
+            text-align: center;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .avatar-option.selected {
+            background: rgba(255,107,107,0.5);
+            border: 1px solid #FF6B6B;
+        }
+        
+        .avatar-emoji {
+            font-size: 40px;
+        }
+        
+        /* Confession item */
+        .confession-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+        
+        /* Popup */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        /* Confetti animation */
+        @keyframes confettiFall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(500px) rotate(360deg); opacity: 0; }
+        }
+        
+        .confetti-piece {
+            position: fixed;
+            font-size: 16px;
+            pointer-events: none;
+            z-index: 2000;
+            animation: confettiFall 3s ease-out forwards;
+        }
+        
+        /* Mystery game styles */
+        .mystery-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .mystery-option {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mystery-option:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        /* Sound toggle */
+        .sound-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 30px;
+            padding: 8px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <div id="stars"></div>
+    <div class="shooting-star" id="shootingStar">💫</div>
+    <div class="sound-toggle" onclick="toggleSound()">🔊 Sound ON</div>
+    
+    <div class="container">
+        <!-- Daily Quote Card -->
+        <div class="quote-card" id="quoteCard">
+            <div class="quote-text" id="quoteText">"The best love story is the one that starts with a simple 'Hello'"</div>
+            <div class="quote-author">✨ Today's Crush Quote</div>
+        </div>
+        
+        <!-- Main Menu -->
+        <div id="mainMenu">
+            <div class="action-buttons">
+                <div class="btn" onclick="showSendForm()">
+                    <div class="btn-emoji">📝</div>
+                    <div class="btn-label">Send Confession</div>
+                </div>
+                <div class="btn" onclick="showInbox()">
+                    <div class="btn-emoji">📥</div>
+                    <div class="btn-label">Inbox <span id="inboxCount" style="color:#FF6B6B">(2)</span></div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <div class="btn" onclick="showDiscover()">
+                    <div class="btn-emoji">🔍</div>
+                    <div class="btn-label">Discover</div>
+                </div>
+                <div class="btn" onclick="showProfile()">
+                    <div class="btn-emoji">👤</div>
+                    <div class="btn-label">Profile</div>
+                </div>
+            </div>
+            
+            <!-- Leaderboard -->
+            <div class="leaderboard">
+                <div class="leaderboard-title">🏆 Most Admired This Week</div>
+                <div class="leaderboard-item">
+                    <span><span class="rank">1.</span> 🦁 LionKing</span>
+                    <span>47 confessions</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span><span class="rank">2.</span> 🐱 CatLover</span>
+                    <span>39 confessions</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span><span class="rank">3.</span> 🐼 PandaGirl</span>
+                    <span>35 confessions</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span><span class="rank">4.</span> 🦊 Foxxy</span>
+                    <span>28 confessions</span>
+                </div>
+                <div class="leaderboard-item">
+                    <span><span class="rank">5.</span> 🐺 WolfMan</span>
+                    <span>22 confessions</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Send Confession Form -->
+        <div id="sendForm" class="hidden">
+            <div class="form-card">
+                <h3 style="margin-bottom: 20px;">✨ New Confession</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Who is your crush?</label>
+                    <input type="text" class="form-input" id="crushUsername" placeholder="@username OR type their name">
+                    <small style="opacity:0.6; font-size:12px;">🔗 Or generate a shareable link to send them</small>
+                </div>
+                
+                <!-- Burst Mode Section -->
+                <div class="form-group">
+                    <label class="form-label">🔥 Burst Mode (Optional)</label>
+                    <div class="media-buttons">
+                        <button class="media-btn" id="burstModeBtn" onclick="toggleBurstMode()" style="background: rgba(255,107,107,0.3);">
+                            🔘 Send to 1 person
+                        </button>
+                    </div>
+                    <div id="burstModeInputs" style="display: none; margin-top: 10px;">
+                        <input type="text" class="form-input" id="crush2" placeholder="2nd crush username" style="margin-bottom: 8px;">
+                        <input type="text" class="form-input" id="crush3" placeholder="3rd crush username">
+                    </div>
+                    <small style="opacity:0.6; font-size:11px;">Send same message to multiple crushes at once</small>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Your message</label>
+                    <textarea class="form-textarea" id="messageText" placeholder="Write your confession here..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Add media (optional)</label>
+                    <div class="media-buttons">
+                        <button class="media-btn" onclick="attachAudio()">🎵 Audio</button>
+                        <button class="media-btn" onclick="attachVoice()">🎙️ Voice</button>
+                        <button class="media-btn" onclick="attachPhoto()">📸 Photo</button>
+                        <button class="media-btn" onclick="attachVideo()">🎥 Video</button>
+                    </div>
+                    <div id="mediaPreview" style="margin-top: 10px; font-size:12px; opacity:0.7;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Your avatar</label>
+                    <div class="avatar-grid" id="avatarGrid">
+                        <div class="avatar-option selected" data-avatar="🤠" onclick="selectAvatar('🤠', this)">
+                            <div class="avatar-emoji">🤠</div>
+                            <div>Cowboy</div>
+                        </div>
+                        <div class="avatar-option" data-avatar="🦁" onclick="selectAvatar('🦁', this)">
+                            <div class="avatar-emoji">🦁</div>
+                            <div>Lion</div>
+                        </div>
+                        <div class="avatar-option" data-avatar="🐱" onclick="selectAvatar('🐱', this)">
+                            <div class="avatar-emoji">🐱</div>
+                            <div>Cat</div>
+                        </div>
+                        <div class="avatar-option" data-avatar="🐼" onclick="selectAvatar('🐼', this)">
+                            <div class="avatar-emoji">🐼</div>
+                            <div>Panda</div>
+                        </div>
+                        <div class="avatar-option" data-avatar="🦊" onclick="selectAvatar('🦊', this)">
+                            <div class="avatar-emoji">🦊</div>
+                            <div>Fox</div>
+                        </div>
+                        <div class="avatar-option" data-avatar="🐺" onclick="selectAvatar('🐺', this)">
+                            <div class="avatar-emoji">🐺</div>
+                            <div>Wolf</div>
+                        </div>
+                        <div class="avatar-option" data-avatar="🐧" onclick="selectAvatar('🐧', this)">
+                            <div class="avatar-emoji">🐧</div>
+                            <div>Penguin</div>
+                        </div>
+                        <div class="avatar-option" data-avatar="🦄" onclick="selectAvatar('🦄', this)">
+                            <div class="avatar-emoji">🦄</div>
+                            <div>Unicorn</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="send-btn" onclick="sendConfession()">💘 Send Confession</button>
+                <button class="media-btn" style="width:100%; margin-top:10px;" onclick="backToMenu()">← Back</button>
+            </div>
+        </div>
+        
+        <!-- Inbox View -->
+        <div id="inboxView" class="hidden">
+            <div class="form-card">
+                <h3 style="margin-bottom: 20px;">📥 Your Confessions</h3>
+                
+                <div id="confessionList">
+                    <div class="confession-item" id="confession1">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span>From: 🤠 Anonymous</span>
+                            <span style="color: #FF6B6B;">🔒 Locked</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; text-align: center; margin: 10px 0;">
+                            🔒🔒🔒 This message is locked 🔒🔒🔒
+                        </div>
+                        <button class="media-btn" style="width:100%;" onclick="showMysteryGame('confession1')">
+                            🎮 Play Mystery Game (Guess to Unlock)
+                        </button>
+                        <button class="media-btn" style="width:100%; margin-top:8px;" onclick="showShareToUnlock('confession1')">
+                            📤 Share to Unlock
+                        </button>
+                    </div>
+                    
+                    <div class="confession-item" id="confession2">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span>From: 🐼 Anonymous</span>
+                            <span style="color: #FF6B6B;">🔒 Locked</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; text-align: center; margin: 10px 0;">
+                            🔒🔒🔒 This message is locked 🔒🔒🔒
+                        </div>
+                        <button class="media-btn" style="width:100%;" onclick="showMysteryGame('confession2')">
+                            🎮 Play Mystery Game (Guess to Unlock)
+                        </button>
+                        <button class="media-btn" style="width:100%; margin-top:8px;" onclick="showShareToUnlock('confession2')">
+                            📤 Share to Unlock
+                        </button>
+                    </div>
+                </div>
+                
+                <button class="media-btn" style="width:100%;" onclick="backToMenu()">← Back</button>
+            </div>
+        </div>
+        
+        <!-- Mystery Game Popup -->
+        <div id="mysteryPopup" class="hidden">
+            <div class="popup-overlay" onclick="closeMysteryPopup()">
+                <div class="form-card" style="width: 100%; max-width: 400px;" onclick="event.stopPropagation()">
+                    <h3 style="margin-bottom: 20px;">🎮 Mystery Game</h3>
+                    <p style="margin-bottom: 15px;">Guess who sent you this confession. If you guess correctly, the message unlocks immediately!</p>
+                    
+                    <div class="mystery-options" id="mysteryOptions">
+                        <div class="mystery-option" onclick="makeMysteryGuess('classmate')">📚 Someone from my class</div>
+                        <div class="mystery-option" onclick="makeMysteryGuess('church')">⛪ Someone from my church/mosque</div>
+                        <div class="mystery-option" onclick="makeMysteryGuess('group')">💬 Someone from my WhatsApp/Telegram group</div>
+                        <div class="mystery-option" onclick="makeMysteryGuess('stranger')">🌍 A complete stranger</div>
+                    </div>
+                    
+                    <button class="media-btn" style="width:100%; margin-top:10px;" onclick="closeMysteryPopup()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Share Popup -->
+        <div id="sharePopup" class="hidden">
+            <div class="popup-overlay" onclick="closeSharePopup(event)">
+                <div class="form-card" style="width: 100%; max-width: 400px;" onclick="event.stopPropagation()">
+                    <h3 style="margin-bottom: 20px;">🔓 Unlock Your Confession</h3>
+                    <p style="margin-bottom: 20px;">Share this app to any Telegram group to read your secret message.</p>
+                    
+                    <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 15px; margin-bottom: 20px;">
+                        <p style="font-size: 14px; margin-bottom: 10px;">📢 Message that will be posted:</p>
+                        <div style="background: #0F3460; border-radius: 8px; padding: 12px; font-size: 12px;">
+                            "🔥 Someone just sent me an anonymous confession! Click to see if you have a secret admirer 👀 [Link]"
+                        </div>
+                    </div>
+                    
+                    <button class="send-btn" onclick="simulateShare()" style="margin-bottom: 10px;">
+                        📤 Share to Group (Demo)
+                    </button>
+                    <button class="media-btn" style="width:100%;" onclick="closeSharePopup()">
+                        Maybe Later
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile View -->
+        <div id="profileView" class="hidden">
+            <div class="form-card">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <div style="font-size: 80px;" id="profileAvatar">🤠</div>
+                    <h3 id="profileName">Anonymous User</h3>
+                    <p style="opacity: 0.7; font-size: 12px;">Member since December 2024</p>
+                </div>
+                
+                <div class="leaderboard" style="margin-bottom: 15px;">
+                    <div class="leaderboard-item">
+                        <span>📤 Confessions sent</span>
+                        <span>12</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>📥 Confessions received</span>
+                        <span>7</span>
+                    </div>
+                    <div class="leaderboard-item">
+                        <span>❤️ Matches</span>
+                        <span>2</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Your Bio</label>
+                    <input type="text" class="form-input" id="userBio" placeholder="Tell something about yourself...">
+                </div>
+                
+                <button class="media-btn" style="width:100%;" onclick="saveProfile()">Save Profile</button>
+                <button class="media-btn" style="width:100%; margin-top:10px;" onclick="backToMenu()">← Back</button>
+            </div>
+        </div>
+        
+        <!-- Discover View -->
+        <div id="discoverView" class="hidden">
+            <div class="form-card">
+                <h3 style="margin-bottom: 20px;">🔍 Discover People</h3>
+                <p style="margin-bottom: 15px;">Swipe right to send an anonymous confession</p>
+                
+                <div id="discoverCard" style="text-align: center; padding: 40px 20px; background: rgba(255,255,255,0.05); border-radius: 20px; margin-bottom: 20px;">
+                    <div style="font-size: 100px;" id="discoverAvatar">🐧</div>
+                    <h4 id="discoverName">PenguinLover</h4>
+                    <p style="opacity: 0.7; font-size: 12px;" id="discoverLocation">From Lagos</p>
+                    <div class="action-buttons" style="margin-top: 20px;">
+                        <button class="media-btn" style="flex:1;" onclick="nextDiscover()">👈 Skip</button>
+                        <button class="send-btn" style="flex:1; padding: 10px;" onclick="confessToDiscover()">💘 Confess 👉</button>
+                    </div>
+                </div>
+                
+                <button class="media-btn" style="width:100%;" onclick="backToMenu()">← Back to Menu</button>
+            </div>
+        </div>
+        
+        <!-- Match Modal -->
+        <div id="matchModal" class="hidden">
+            <div class="popup-overlay" onclick="closeMatchModal()">
+                <div class="form-card" style="width: 100%; max-width: 400px; text-align: center;" onclick="event.stopPropagation()">
+                    <div style="font-size: 60px; margin-bottom: 10px;" id="confettiContainer">🎉✨💥</div>
+                    <h2 style="color: #FF6B6B; margin-bottom: 10px;">MATCH!</h2>
+                    <p style="margin-bottom: 20px;">You and your admirer both like each other!</p>
+                    <button class="send-btn" onclick="revealMatch()">👥 Reveal Identities</button>
+                    <button class="media-btn" style="width:100%; margin-top:10px;" onclick="closeMatchModal()">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== SOUND EFFECTS ==========
+        let soundEnabled = true;
+        
+        function playSound() {
+            if (!soundEnabled) return;
+            // Create audio context and play beep (works without external files)
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.frequency.value = 880;
+                gainNode.gain.value = 0.1;
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 0.5);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch(e) {
+                console.log('Audio not supported');
+            }
+        }
+        
+        function playMatchSound() {
+            if (!soundEnabled) return;
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                oscillator.frequency.value = 523.25;
+                gainNode.gain.value = 0.1;
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.frequency.value = 659.25;
+                }, 100);
+                setTimeout(() => {
+                    oscillator.frequency.value = 783.99;
+                }, 200);
+                gainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.currentTime + 1);
+                oscillator.stop(audioContext.currentTime + 1);
+            } catch(e) {}
+        }
+        
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const toggle = document.querySelector('.sound-toggle');
+            toggle.textContent = soundEnabled ? '🔊 Sound ON' : '🔇 Sound OFF';
+        }
+        
+        // ========== CONFETTI EFFECT ==========
+        function showConfetti() {
+            const confettiEmojis = ['🎉', '✨', '💥', '🎊', '❤️', '💕', '🎈', '⭐'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                confetti.textContent = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-20px';
+                confetti.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+        
+        // ========== STARS BACKGROUND ==========
+        function generateStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.textContent = '✦';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 5 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        setInterval(() => {
+            const shootingStar = document.getElementById('shootingStar');
+            shootingStar.style.left = Math.random() * 80 + '%';
+            shootingStar.style.top = Math.random() * 30 + '%';
+            shootingStar.style.animation = 'none';
+            setTimeout(() => {
+                shootingStar.style.animation = 'shootingStar 3s linear';
+            }, 10);
+        }, 20000);
+        
+        // ========== DAILY QUOTES ==========
+        const quotes = [
+            { text: "The best love story is the one that starts with a simple 'Hello'", author: "✨ CrushVault" },
+            { text: "Your crush isn't a mind reader - confess today", author: "💘 Daily Quote" },
+            { text: "Fear of rejection is the thief of love", author: "🌟 Inspiration" },
+            { text: "Every 'me too' starts with one brave confession", author: "💕 CrushVault" },
+            { text: "The messages you never send are the ones you'll regret", author: "✨ CrushVault" },
+            { text: "Love is a risk worth taking", author: "💘 Daily Quote" }
+        ];
+        
+        function setDailyQuote() {
+            const today = new Date().getDate();
+            const quote = quotes[today % quotes.length];
+            document.getElementById('quoteText').textContent = `"${quote.text}"`;
+        }
+        
+        // ========== NAVIGATION ==========
+        let currentAvatar = '🤠';
+        let currentAvatarElement = null;
+        let currentConfessionId = null;
+        
+        function showSendForm() {
+            hideAllViews();
+            document.getElementById('sendForm').classList.remove('hidden');
+        }
+        
+        function showInbox() {
+            hideAllViews();
+            document.getElementById('inboxView').classList.remove('hidden');
+        }
+        
+        function showProfile() {
+            hideAllViews();
+            document.getElementById('profileView').classList.remove('hidden');
+        }
+        
+        function showDiscover() {
+            hideAllViews();
+            document.getElementById('discoverView').classList.remove('hidden');
+        }
+        
+        function hideAllViews() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('sendForm').classList.add('hidden');
+            document.getElementById('inboxView').classList.add('hidden');
+            document.getElementById('profileView').classList.add('hidden');
+            document.getElementById('discoverView').classList.add('hidden');
+            document.getElementById('sharePopup').classList.add('hidden');
+            document.getElementById('matchModal').classList.add('hidden');
+            document.getElementById('mysteryPopup').classList.add('hidden');
+        }
+        
+        function backToMenu() {
+            document.getElementById('mainMenu').classList.remove('hidden');
+            document.getElementById('sendForm').classList.add('hidden');
+            document.getElementById('inboxView').classList.add('hidden');
+            document.getElementById('profileView').classList.add('hidden');
+            document.getElementById('discoverView').classList.add('hidden');
+            document.getElementById('sharePopup').classList.add('hidden');
+            document.getElementById('matchModal').classList.add('hidden');
+            document.getElementById('mysteryPopup').classList.add('hidden');
+        }
+        
+        // ========== AVATAR ==========
+        function selectAvatar(avatar, element) {
+            currentAvatar = avatar;
+            if (currentAvatarElement) {
+                currentAvatarElement.classList.remove('selected');
+            }
+            currentAvatarElement = element;
+            element.classList.add('selected');
+            document.getElementById('profileAvatar').textContent = avatar;
+        }
+        
+        function saveProfile() {
+            const bio = document.getElementById('userBio').value;
+            playSound();
+            alert(`Profile saved!${bio ? ' Bio: ' + bio : ''}`);
+        }
+        
+        // ========== BURST MODE ==========
+        let burstModeActive = false;
+        
+        function toggleBurstMode() {
+            burstModeActive = !burstModeActive;
+            const btn = document.getElementById('burstModeBtn');
+            const inputs = document.getElementById('burstModeInputs');
+            
+            if (burstModeActive) {
+                btn.innerHTML = '🔥 Send to 3 people (Burst Mode ON)';
+                btn.style.background = 'rgba(255,107,107,0.8)';
+                inputs.style.display = 'block';
+            } else {
+                btn.innerHTML = '🔘 Send to 1 person';
+                btn.style.background = 'rgba(255,107,107,0.3)';
+                inputs.style.display = 'none';
+                document.getElementById('crush2').value = '';
+                document.getElementById('crush3').value = '';
+            }
+        }
+        
+        // ========== SEND CONFESSION ==========
+        function sendConfession() {
+            const crush1 = document.getElementById('crushUsername').value;
+            const message = document.getElementById('messageText').value;
+            
+            if (!message) {
+                alert('Please write your message.');
+                return;
+            }
+            
+            playSound();
+            
+            if (burstModeActive) {
+                const crush2 = document.getElementById('crush2').value;
+                const crush3 = document.getElementById('crush3').value;
+                
+                if (!crush1 && !crush2 && !crush3) {
+                    alert('Please enter at least one crush name.');
+                    return;
+                }
+                
+                let sentCount = 0;
+                let sentList = [];
+                
+                if (crush1) { sentCount++; sentList.push(crush1); }
+                if (crush2) { sentCount++; sentList.push(crush2); }
+                if (crush3) { sentCount++; sentList.push(crush3); }
+                
+                alert(`✓ Burst confession sent to ${sentCount} person(s):\n${sentList.join(', ')}\n\nMessage: "${message}"\n\nAll will receive it anonymously.`);
+                
+                document.getElementById('crushUsername').value = '';
+                document.getElementById('crush2').value = '';
+                document.getElementById('crush3').value = '';
+                toggleBurstMode();
+            } else {
+                if (!crush1) {
+                    alert('Please enter your crush\'s name.');
+                    return;
+                }
+                
+                alert(`✓ Confession sent to ${crush1}!\n\nYour message: "${message}"\n\nThey will receive it anonymously. If they click "Me too", you will match!`);
+                document.getElementById('crushUsername').value = '';
+            }
+            
+            document.getElementById('messageText').value = '';
+            document.getElementById('mediaPreview').innerHTML = '';
+            backToMenu();
+        }
+        
+        // ========== MEDIA ATTACHMENTS ==========
+        function attachAudio() {
+            playSound();
+            document.getElementById('mediaPreview').innerHTML = '🎵 Audio file selected';
+        }
+        
+        function attachVoice() {
+            playSound();
+            document.getElementById('mediaPreview').innerHTML = '🎙️ Voice note ready';
+        }
+        
+        function attachPhoto() {
+            playSound();
+            document.getElementById('mediaPreview').innerHTML = '📸 Photo attached';
+        }
+        
+        function attachVideo() {
+            playSound();
+            document.getElementById('mediaPreview').innerHTML = '🎥 Video attached';
+        }
+        
+        // ========== MYSTERY GAME ==========
+        function showMysteryGame(confessionId) {
+            currentConfessionId = confessionId;
+            document.getElementById('mysteryPopup').classList.remove('hidden');
+        }
+        
+        function closeMysteryPopup() {
+            document.getElementById('mysteryPopup').classList.add('hidden');
+            currentConfessionId = null;
+        }
+        
+        function makeMysteryGuess(guess) {
+            closeMysteryPopup();
+            // Random chance to win (30% win rate to keep it fun)
+            const isWinner = Math.random() < 0.3;
+            
+            if (isWinner) {
+                playSound();
+                alert('🎉 CORRECT GUESS! 🎉\n\nYou guessed right! The message unlocks immediately without sharing!');
+                unlockConfession(currentConfessionId);
+            } else {
+                playSound();
+                alert('❌ Wrong guess!\n\nYou can try sharing to unlock instead.');
+                showShareToUnlock(currentConfessionId);
+            }
+        }
+        
+        // ========== SHARE TO UNLOCK ==========
+        function showShareToUnlock(confessionId) {
+            currentConfessionId = confessionId;
+            document.getElementById('sharePopup').classList.remove('hidden');
+        }
+        
+        function closeSharePopup(event) {
+            if (event && event.target !== event.currentTarget && !event.target.classList.contains('media-btn')) return;
+            document.getElementById('sharePopup').classList.add('hidden');
+            currentConfessionId = null;
+        }
+        
+        function unlockConfession(confessionId) {
+            const confessionElement = document.getElementById(confessionId);
+            if (confessionElement) {
+                confessionElement.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                        <span>From: 🤠 Anonymous</span>
+                        <span style="color: #4CAF50;">✅ Unlocked</span>
+                    </div>
+                    <div style="background: rgba(76,175,80,0.1); border-radius: 12px; padding: 12px; margin: 10px 0;">
+                        💬 "I have liked you since the first day we met. You have an amazing smile!"
+                    </div>
+                    <div class="action-buttons" style="margin-top: 10px;">
+                        <button class="media-btn" style="flex:1;" onclick="rejectConfession(this)">👎 Not Interested</button>
+                        <button class="send-btn" style="flex:1; padding: 10px;" onclick="acceptConfession(this)">❤️ Me Too!</button>
+                    </div>
+                `;
+                playSound();
+            }
+        }
+        
+        function simulateShare() {
+            closeSharePopup();
+            if (currentConfessionId) {
+                unlockConfession(currentConfessionId);
+            } else {
+                showMatchModal();
+            }
+        }
+        
+        function rejectConfession(btn) {
+            playSound();
+            const item = btn.closest('.confession-item');
+            if (item) {
+                item.style.opacity = '0.5';
+                item.innerHTML = '<div style="text-align:center; padding:20px;">❌ You declined this confession</div>';
+            }
+        }
+        
+        function acceptConfession(btn) {
+            playMatchSound();
+            showConfetti();
+            showMatchModal();
+            const item = btn.closest('.confession-item');
+            if (item) {
+                item.style.opacity = '0.5';
+            }
+        }
+        
+        // ========== MATCH MODAL ==========
+        function showMatchModal() {
+            playMatchSound();
+            showConfetti();
+            document.getElementById('matchModal').classList.remove('hidden');
+        }
+        
+        function closeMatchModal() {
+            document.getElementById('matchModal').classList.add('hidden');
+        }
+        
+        function revealMatch() {
+            playSound();
+            closeMatchModal();
+            alert("✓ Identities revealed!\n\nYou can now see each other's usernames and start chatting.\n\nUser: @yourAdmirer\nAdmirer sees: @yourUsername");
+        }
+        
+        // ========== DISCOVER FEATURE ==========
+        const discoverUsers = [
+            { avatar: '🐧', name: 'PenguinLover', location: 'Lagos' },
+            { avatar: '🦊', name: 'Foxxy', location: 'Accra' },
+            { avatar: '🐺', name: 'WolfMan', location: 'Nairobi' },
+            { avatar: '🦄', name: 'UnicornDreamer', location: 'Cape Town' },
+            { avatar: '🐱', name: 'CatLover', location: 'London' }
+        ];
+        
+        let discoverIndex = 0;
+        
+        function updateDiscoverCard() {
+            const user = discoverUsers[discoverIndex];
+            document.getElementById('discoverAvatar').textContent = user.avatar;
+            document.getElementById('discoverName').textContent = user.name;
+            document.getElementById('discoverLocation').textContent = 'From ' + user.location;
+        }
+        
+        function nextDiscover() {
+            playSound();
+            discoverIndex = (discoverIndex + 1) % discoverUsers.length;
+            updateDiscoverCard();
+        }
+        
+        function confessToDiscover() {
+            const user = discoverUsers[discoverIndex];
+            playSound();
+            alert(`✓ Anonymous confession sent to ${user.name}!\n\nThey will receive it anonymously. If they like you back, you will match.`);
+            nextDiscover();
+        }
+        
+        // ========== TELEGRAM WEBAPP INIT ==========
+        function initTelegramWebApp() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.expand();
+                tg.ready();
+                console.log('Telegram WebApp ready');
+            } else {
+                console.log('Demo mode - not inside Telegram');
+            }
+        }
+        
+        // ========== INITIALIZE ==========
+        generateStars();
+        setDailyQuote();
+        updateDiscoverCard();
+        initTelegramWebApp();
+    </script>
+</body>
+  </html>
